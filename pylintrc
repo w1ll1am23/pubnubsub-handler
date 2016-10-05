@@ -1,0 +1,15 @@
+[MASTER]
+max-line-length=120
+max-args=10
+ignore=test
+
+# Reasons disabled:
+# missing-docstring - Document as you like.  Good, descriptive method names and variables are preferred over docstrings.
+# global-statement - used for the on-demand requirement installation
+# invalid-name - this warning flags short names but I'm fine with short names when used correctly
+# locally-disabled - Because that's the whole point!
+disable=
+    missing-docstring
+  , global-statement
+  , invalid-name
+  , locally-disabled
