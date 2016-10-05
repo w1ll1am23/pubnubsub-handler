@@ -17,7 +17,7 @@ setup(
     install_requires=[
         'pycryptodomex>=3.3',
         'requests>=2.4'
-        'pubnub>=4.0'
+        'pubnub==3.8.3'
     ],
     zip_safe=False,
 )
