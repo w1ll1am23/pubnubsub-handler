@@ -3,6 +3,8 @@ Handle the subscriptions responses between PubNub and Home-Assistant.
 """
 
 import json
+import threading
+import time
 
 from pubnub import Pubnub
 
@@ -18,9 +20,10 @@ class PubNubWinkHandler():
         self.subscriptions = {}
         self.channels = []
         self.current_data = {}
+        self.sub_key = sub_key
         self.pubnub = Pubnub(
-            'N/A', sub_key, ssl_on=True)
-        self.pubnub.set_heartbeat(120)
+            'N/A', self.sub_key, ssl_on=True)
+        self.pubnub.set_heartbeat(6)
 
     def add_subscription(self, channel, function):
         """
@@ -39,13 +42,23 @@ class PubNubWinkHandler():
         Start the subscription to the channel list.
         """
         self.pubnub.subscribe(self.channels, self.pub_callback)
+        threading.Timer(300, self.resubscribe).start()
+
+    def resubscribe(self):
+        """
+        Unsubscribe and resubscribe from the channel list.
+        """
+        self.unsubscribe()
+        new_pubnub = PubNubWinkHandler(self.sub_key)
+        del self
+        new_pubnub.subscribe()
 
     def unsubscribe(self):
         """
         Stop the subscription to the channel list.
         """
-        for channel in self.channels:
-            self.pubnub.unsubscribe(channel)
+        csv_channels = ",".join(self.channels)
+        self.pubnub.unsubscribe(channel=csv_channels)
 
     def pub_callback(self, message, channel):
         """
