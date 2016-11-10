@@ -138,16 +138,11 @@ class PubNubWinkCallback(SubscribeCallback):
         with open('/home/pi/pubnub.log', 'a') as pub_log:
             pub_log.write("\n\n\n")
             pub_log.write(str(datetime.datetime.now()) + "\n")
-            if 'pull_url' in json_data:
-                # Raise exception so an API call can be made
-                # to obtain the correct state
-                raise PyWinkSubError
             pub_log.write(json_data)
-        for func in SUBSCRIPTIONS[message.subscribed_channel]:
-            if CURRENT_DATA[message.subscribed_channel] != json_data:
-                func(json.loads(json_data))
-        CURRENT_DATA[message.subscribed_channel] = json_data
-
-class PyWinkSubError(Exception):
-    def __init__(self,*args,**kwargs):
-        Exception.__init__(self,*args,**kwargs)
+        for func in SUBSCRIPTIONS[message.channel]:
+            if CURRENT_DATA[message.channel] != json_data:
+                if 'pull_url' in json_data:
+                    func(None)
+                else:
+                    func(json.loads(json_data))
+        CURRENT_DATA[message.channel] = json_data

@@ -5,7 +5,7 @@ setup(
     version='0.0.1',
     description='Handles the PubNub subscription between PubNub and Home-Assistant',
     author='William Scanlon',
-    py_modules=['pubnub'],
+    py_modules=['pywinksub'],
     license='MIT',
     classifiers=(
         'Programming Language :: Python',
@@ -17,7 +17,7 @@ setup(
     install_requires=[
         'pycryptodomex>=3.3',
         'requests>=2.4',
-        'pubnub==4.0.0'
+        'pubnub==4.0.1'
     ],
     zip_safe=False,
 )
