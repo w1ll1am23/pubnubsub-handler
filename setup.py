@@ -5,7 +5,7 @@ setup(
     version='0.0.2',
     description='Handles the PubNub subscriptions between PubNub and Home-Assistant',
     author='William Scanlon',
-    py_modules=['pubnubsub-handler'],
+    py_modules=['pubnubsubhandler'],
     license='MIT',
     classifiers=(
         'Programming Language :: Python',
