@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='pywinksub',
-    version='0.0.1',
-    description='Handles the PubNub subscription between PubNub and Home-Assistant',
+    name='pubnubsub-handler',
+    version='0.0.2',
+    description='Handles the PubNub subscriptions between PubNub and Home-Assistant',
     author='William Scanlon',
-    py_modules=['pywinksub'],
+    py_modules=['pubnubsub-handler'],
     license='MIT',
     classifiers=(
         'Programming Language :: Python',
