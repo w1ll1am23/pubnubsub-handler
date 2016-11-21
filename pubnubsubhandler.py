@@ -44,9 +44,9 @@ class PubNubSubscriptionHandler():
         self._pubnub.add_listener(PubNubSubCallback())
         self._keep_alive_function = keep_alive_function
         self._keep_alive = keep_alive
+        self._subscribed = False
 
-    @staticmethod
-    def add_subscription(channel, callback_function):
+    def add_subscription(self, channel, callback_function):
         """
         Add a channel to subscribe to and a callback function to
         run when the channel receives an update.
@@ -63,6 +63,12 @@ class PubNubSubscriptionHandler():
             SUBSCRIPTIONS[channel] = [callback_function]
         else:
             SUBSCRIPTIONS[channel].append(callback_function)
+        # If a channel gets added after subscription has already been called
+        # call subscribe on the individual channel, here.
+        if self._subscribed:
+            _LOGGER.info("New channel added after main subscribe call.")
+            self._pubnub.subscribe().channels(channel).execute()
+            
 
     def subscribe(self):
         """
@@ -70,9 +76,11 @@ class PubNubSubscriptionHandler():
         If self._keep_alive_function isn't None start timer thread to
         run self._keep_alive_function every self._keep_alive amount of seconds.
         """
+        _LOGGER.info("PubNub subscribing")
         self._pubnub.subscribe().channels(CHANNELS).execute()
         if self._keep_alive_function is not None:
             threading.Timer(self._keep_alive, self._run_keep_alive).start()
+        self._subscribed = True
 
     def _run_keep_alive(self):
         """
@@ -90,16 +98,19 @@ class PubNubSubscriptionHandler():
         Once complete resubscribe to the channel list with a new PubNub
         object.
         """
+        _LOGGER.info("PubNub Resubscribing")
         self.unsubscribe()
         # Wait for the unsubscribe to complete
         time.sleep(35)
         self._pubnub = PubNub(self._pnconfig)
         self._pubnub.add_listener(PubNubSubCallback())
+        self._pubnub.subscribe()
 
     def unsubscribe(self):
         """
         Completly stop all pubnub operations.
         """
+        _LOGGER.info("PubNub unsubscribing")
         self._pubnub.unsubscribe_all()
         sleep_thread = threading.Thread(target=self._sleep_for_unsubscribe)
         sleep_thread.start()
