@@ -1,2 +1,2 @@
 # pubnubsub-handler
-Handles the Wink PubNub subscriptions between PubNub and Home-Assistant
+Handles the PubNub subscriptions between PubNub and Home-Assistant for the Wink component

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pubnubsub-handler',
-    version='0.0.2',
+    version='0.0.3',
     description='Handles the PubNub subscriptions between PubNub and Home-Assistant',
     author='William Scanlon',
     py_modules=['pubnubsubhandler'],
