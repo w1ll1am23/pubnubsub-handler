@@ -72,15 +72,10 @@ class PubNubSubscriptionHandler():
 
     def subscribe(self):
         """
-        Start the subscription to the channel list.
-        If self._keep_alive_function isn't None start timer thread to
-        run self._keep_alive_function every self._keep_alive amount of seconds.
+        Call the real subscribe method in 60 seconds.
+        This give the calling program (HA) more time to add devices.
         """
-        _LOGGER.info("PubNub subscribing")
-        self._pubnub.subscribe().channels(CHANNELS).execute()
-        if self._keep_alive_function is not None:
-            threading.Timer(self._keep_alive, self._run_keep_alive).start()
-        self._subscribed = True
+        threading.Timer(60, self._subscribe).start()
 
     def _run_keep_alive(self):
         """
@@ -91,20 +86,6 @@ class PubNubSubscriptionHandler():
         _LOGGER.info("Polling the API")
         # This may or may not return something
         self._keep_alive_function()
-
-    def resubscribe(self):
-        """
-        Unsubscribe from the channel list and stop all PubNub processes.
-        Once complete resubscribe to the channel list with a new PubNub
-        object.
-        """
-        _LOGGER.info("PubNub Resubscribing")
-        self.unsubscribe()
-        # Wait for the unsubscribe to complete
-        time.sleep(35)
-        self._pubnub = PubNub(self._pnconfig)
-        self._pubnub.add_listener(PubNubSubCallback())
-        self._pubnub.subscribe()
 
     def unsubscribe(self):
         """
@@ -119,6 +100,18 @@ class PubNubSubscriptionHandler():
         time.sleep(30)
         self._pubnub.stop()
         self._pubnub = None
+
+    def _subscribe(self):
+        """
+        Start the subscription to the channel list.
+        If self._keep_alive_function isn't None start timer thread to
+        run self._keep_alive_function every self._keep_alive amount of seconds.
+        """
+        _LOGGER.info("PubNub subscribing")
+        self._pubnub.subscribe().channels(CHANNELS).execute()
+        if self._keep_alive_function is not None:
+            threading.Timer(self._keep_alive, self._run_keep_alive).start()
+        self._subscribed = True
 
 
 
