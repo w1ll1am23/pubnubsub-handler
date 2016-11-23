@@ -4,6 +4,7 @@ setup(
     name='pubnubsub-handler',
     version='0.0.3',
     description='Handles the PubNub subscriptions between PubNub and Home-Assistant for Wink',
+    url='https://github.com/w1ll1am23/pubnubsub-handler',
     author='William Scanlon',
     py_modules=['pubnubsubhandler'],
     license='MIT',
