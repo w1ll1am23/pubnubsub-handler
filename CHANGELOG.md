@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.0.5
+- Made sleep before subscription optional.
+
 ## 0.0.4
 - Updated pubnub version.
 
