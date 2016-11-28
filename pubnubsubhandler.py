@@ -4,7 +4,6 @@ Handle the subscriptions responses between PubNub and another program.
 
 import json
 import threading
-import time
 import logging
 
 from pubnub.pnconfiguration import PNConfiguration
@@ -22,7 +21,8 @@ class PubNubSubscriptionHandler():
     Connection handler for PubNub Subscriptions.
     """
 
-    def __init__(self, sub_key, keep_alive_function=None, keep_alive=3600):
+    def __init__(self, sub_key, keep_alive_function=None, keep_alive=3600,
+                 sub_delay=1):
         """
         Create the PubNub connection object.
 
@@ -35,16 +35,20 @@ class PubNubSubscriptionHandler():
                 occasionally to keep updates flowing from PubNub.
             keep_alive (int, optional): How often to run the keep_alive_function
                 in seconds. Defaults to 3600 (1 hour)
+            sub_delay (int, optional): How long to delay the call to subscribe.
+                Defaults to 1 second. (No delay)
         """
         self._sub_key = sub_key
         self._pnconfig = PNConfiguration()
         self._pnconfig.subscribe_key = sub_key
         self._pnconfig.ssl = True
         self._pubnub = PubNub(self._pnconfig)
-        self._pubnub.add_listener(PubNubSubCallback())
+        self._listener = PubNubSubCallback()
+        self._pubnub.add_listener(self._listener)
         self._keep_alive_function = keep_alive_function
         self._keep_alive = keep_alive
         self._subscribed = False
+        self._subscription_delay = sub_delay
 
     def add_subscription(self, channel, callback_function):
         """
@@ -68,14 +72,14 @@ class PubNubSubscriptionHandler():
         if self._subscribed:
             _LOGGER.info("New channel added after main subscribe call.")
             self._pubnub.subscribe().channels(channel).execute()
-            
 
     def subscribe(self):
         """
-        Call the real subscribe method in 60 seconds.
-        This give the calling program (HA) more time to add devices.
+        Call the real subscribe method in self._subscription_delay seconds.
+        This give the calling program more time to add devices to keep the
+        TCP connections to a minimum.
         """
-        threading.Timer(60, self._subscribe).start()
+        threading.Timer(self._subscription_delay, self._subscribe).start()
 
     def _run_keep_alive(self):
         """
@@ -93,11 +97,6 @@ class PubNubSubscriptionHandler():
         """
         _LOGGER.info("PubNub unsubscribing")
         self._pubnub.unsubscribe_all()
-        sleep_thread = threading.Thread(target=self._sleep_for_unsubscribe)
-        sleep_thread.start()
-
-    def _sleep_for_unsubscribe(self):
-        time.sleep(30)
         self._pubnub.stop()
         self._pubnub = None
 
@@ -112,7 +111,6 @@ class PubNubSubscriptionHandler():
         if self._keep_alive_function is not None:
             threading.Timer(self._keep_alive, self._run_keep_alive).start()
         self._subscribed = True
-
 
 
 class PubNubSubCallback(SubscribeCallback):
