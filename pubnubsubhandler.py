@@ -8,8 +8,10 @@ import logging
 
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
-from pubnub.pubnub import SubscribeCallback, PNOperationType, \
-                          PNStatusCategory
+from pubnub.enums import PNOperationType, PNStatusCategory, \
+                         PNReconnectionPolicy
+from pubnub.callbacks import SubscribeCallback
+
 
 SUBSCRIPTIONS = {}
 CHANNELS = []
@@ -40,6 +42,7 @@ class PubNubSubscriptionHandler():
         """
         self._sub_key = sub_key
         self._pnconfig = PNConfiguration()
+        self._pnconfig.reconnection_policy = PNReconnectionPolicy.EXPONENTIAL
         self._pnconfig.subscribe_key = sub_key
         self._pnconfig.ssl = True
         self._pubnub = PubNub(self._pnconfig)

@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.0.7
+- Updated to pubnub 4.0.5
+
+## 0.0.6
+- Updated to pubnub 4.0.4 and added automatic reconnects
+
 ## 0.0.5
 - Made sleep before subscription optional.
 
