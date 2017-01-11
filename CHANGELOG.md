@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.0
+- Code reviewed by pubnub team, corrected reconnect policy.
+
 ## 0.0.7
 - Updated to pubnub 4.0.5
 
