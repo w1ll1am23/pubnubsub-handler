@@ -42,7 +42,7 @@ class PubNubSubscriptionHandler():
         """
         self._sub_key = sub_key
         self._pnconfig = PNConfiguration()
-        self._pnconfig.reconnection_policy = PNReconnectionPolicy.EXPONENTIAL
+        self._pnconfig.reconnect_policy = PNReconnectionPolicy.EXPONENTIAL
         self._pnconfig.subscribe_key = sub_key
         self._pnconfig.ssl = True
         self._pubnub = PubNub(self._pnconfig)
