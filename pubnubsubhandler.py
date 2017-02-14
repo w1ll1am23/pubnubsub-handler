@@ -171,9 +171,9 @@ class PubNubSubCallback(SubscribeCallback):
         to channels.
         Proccess the message and call the channels callback function(s).
         """
-        if '\'data\':' in message.message:
+        try:
             json_data = json.dumps(message.message.get('data'))
-        else:
+        except AttributeError:
             json_data = message.message
         for func in SUBSCRIPTIONS[message.channel]:
             # This means pubnub couldn't get the current state of the channel
