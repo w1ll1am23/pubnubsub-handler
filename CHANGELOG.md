@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.1
+- Check for "'data':" not "data"
+
 ## 1.0.0
 - Code reviewed by pubnub team, corrected reconnect policy.
 
