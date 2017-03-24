@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.2
+- Update to pubnub 4.0.10
+
 ## 1.0.1
 - Check for "'data':" not "data"
 
