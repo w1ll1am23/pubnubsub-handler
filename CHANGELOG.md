@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.4
+- Allow subscription URL to be passed in
+
 ## 1.0.2
 - Update to pubnub 4.0.10
 

@@ -24,7 +24,7 @@ class PubNubSubscriptionHandler():
     """
 
     def __init__(self, sub_key, keep_alive_function=None, keep_alive=3600,
-                 sub_delay=1):
+                 sub_delay=1, origin=None):
         """
         Create the PubNub connection object.
 
@@ -42,6 +42,8 @@ class PubNubSubscriptionHandler():
         """
         self._sub_key = sub_key
         self._pnconfig = PNConfiguration()
+        if origin is not None:
+            self._pnconfig.origin = origin
         self._pnconfig.reconnect_policy = PNReconnectionPolicy.EXPONENTIAL
         self._pnconfig.subscribe_key = sub_key
         self._pnconfig.ssl = True
