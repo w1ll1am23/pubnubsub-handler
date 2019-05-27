@@ -15,6 +15,7 @@ from pubnub.callbacks import SubscribeCallback
 
 SUBSCRIPTIONS = {}
 CHANNELS = []
+CHANNEL_LISTS = []
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class PubNubSubscriptionHandler():
     """
 
     def __init__(self, sub_key, keep_alive_function=None, keep_alive=3600,
-                 sub_delay=1, origin=None):
+                 sub_delay=2, origin=None):
         """
         Create the PubNub connection object.
 
@@ -40,16 +41,17 @@ class PubNubSubscriptionHandler():
             sub_delay (int, optional): How long to delay the call to subscribe.
                 Defaults to 1 second. (No delay)
         """
+        logging.getLogger('pubnub').setLevel(logging.CRITICAL)
         self._sub_key = sub_key
         self._pnconfig = PNConfiguration()
         if origin is not None:
             self._pnconfig.origin = origin
+        self._pnconfig.non_subscribe_request_timeout = 30
         self._pnconfig.reconnect_policy = PNReconnectionPolicy.EXPONENTIAL
         self._pnconfig.subscribe_key = sub_key
         self._pnconfig.ssl = True
-        self._pubnub = PubNub(self._pnconfig)
+        self._pubnubs = []
         self._listener = PubNubSubCallback()
-        self._pubnub.add_listener(self._listener)
         self._keep_alive_function = keep_alive_function
         self._keep_alive = keep_alive
         self._subscribed = False
@@ -76,7 +78,7 @@ class PubNubSubscriptionHandler():
         # call subscribe on the individual channel, here.
         if self._subscribed:
             _LOGGER.info("New channel added after main subscribe call.")
-            self._pubnub.subscribe().channels(channel).execute()
+            self._pubnubs[0].subscribe().channels(channel).execute()
 
     def subscribe(self):
         """
@@ -101,9 +103,11 @@ class PubNubSubscriptionHandler():
         Completly stop all pubnub operations.
         """
         _LOGGER.info("PubNub unsubscribing")
-        self._pubnub.unsubscribe_all()
-        self._pubnub.stop()
-        self._pubnub = None
+        for pubnub in self.pubnubs:
+            pubnub.unsubscribe_all()
+            pubnub.stop()
+            pubnub = None
+        self.pubnubs.clear()
 
     def _subscribe(self):
         """
@@ -112,7 +116,12 @@ class PubNubSubscriptionHandler():
         run self._keep_alive_function every self._keep_alive amount of seconds.
         """
         _LOGGER.info("PubNub subscribing")
-        self._pubnub.subscribe().channels(CHANNELS).execute()
+        CHANNEL_LISTS = [CHANNELS[x:x+3] for x in range(0, len(CHANNELS), 3)]
+        print(str(CHANNEL_LISTS))
+        for channel_list in CHANNEL_LISTS:
+            self._pubnubs.append(PubNub(self._pnconfig))
+            self._pubnubs[-1].add_listener(self._listener)
+            self._pubnubs[-1].subscribe().channels(channel_list).execute()
         if self._keep_alive_function is not None:
             threading.Timer(self._keep_alive, self._run_keep_alive).start()
         self._subscribed = True
@@ -131,33 +140,33 @@ class PubNubSubCallback(SubscribeCallback):
             or status.operation == PNOperationType.PNUnsubscribeOperation:
             if status.category == PNStatusCategory.PNConnectedCategory:
                 # This is expected for a subscribe, this means there is no error or issue whatsoever
-                _LOGGER.info("PubNub connected")
+                _LOGGER.debug("PubNub connected")
             elif status.category == PNStatusCategory.PNReconnectedCategory:
                 # This usually occurs if subscribe temporarily fails but reconnects. This means
                 # there was an error but there is no longer any issue
-                _LOGGER.info("PubNub reconnected")
+                _LOGGER.debug("PubNub reconnected")
             elif status.category == PNStatusCategory.PNDisconnectedCategory:
                 # This is the expected category for an unsubscribe. This means there
                 # was no error in unsubscribing from everything
-                _LOGGER.info("PubNub unsubscribed")
+                _LOGGER.debug("PubNub unsubscribed")
             elif status.category == PNStatusCategory.PNUnexpectedDisconnectCategory:
                 # This is usually an issue with the internet connection, this is an error, handle appropriately
                 # retry will be called automatically
-                _LOGGER.info("PubNub disconnected (lost internet?)")
+                _LOGGER.debug("PubNub disconnected (lost internet?)")
             else:
                 # This is usually an issue with the internet connection, this is an error, handle appropriately
                 # retry will be called automatically
-                _LOGGER.info("PubNub disconnected (lost internet?)")
+                _LOGGER.debug("PubNub disconnected (lost internet?)")
         elif status.operation == PNOperationType.PNHeartbeatOperation:
             # Heartbeat operations can in fact have errors, so it is important to check first for an error.
             # For more information on how to configure heartbeat notifications through the status
             # PNObjectEventListener callback, consult <link to the PNCONFIGURATION heartbeart config>
             if status.is_error():
                 # There was an error with the heartbeat operation, handle here
-                _LOGGER.info("PubNub failed heartbeat")
+                _LOGGER.debug("PubNub failed heartbeat")
             else:
                 # Heartbeat operation was successful
-                _LOGGER.info("PubNub heartbeat")
+                _LOGGER.debug("PubNub heartbeat")
         else:
             pass
 

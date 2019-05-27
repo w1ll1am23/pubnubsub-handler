@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.5
+- Create a new pubnub instance for every 50 channels, delay subscirption for 60 seconds, and set pubnub logging to critical by default
+
 ## 1.0.4
 - Allow subscription URL to be passed in
 
