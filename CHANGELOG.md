@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.6
+- Change the channel splitting from 3 to 50 
+
 ## 1.0.5
 - Create a new pubnub instance for every 50 channels, delay subscirption for 60 seconds, and set pubnub logging to critical by default
 

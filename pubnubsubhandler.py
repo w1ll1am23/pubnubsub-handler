@@ -116,7 +116,7 @@ class PubNubSubscriptionHandler():
         run self._keep_alive_function every self._keep_alive amount of seconds.
         """
         _LOGGER.info("PubNub subscribing")
-        CHANNEL_LISTS = [CHANNELS[x:x+3] for x in range(0, len(CHANNELS), 3)]
+        CHANNEL_LISTS = [CHANNELS[x:x+50] for x in range(0, len(CHANNELS), 50)]
         print(str(CHANNEL_LISTS))
         for channel_list in CHANNEL_LISTS:
             self._pubnubs.append(PubNub(self._pnconfig))
