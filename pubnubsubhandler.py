@@ -25,7 +25,7 @@ class PubNubSubscriptionHandler():
     """
 
     def __init__(self, sub_key, keep_alive_function=None, keep_alive=3600,
-                 sub_delay=2, origin=None):
+                 sub_delay=60, origin=None):
         """
         Create the PubNub connection object.
 
@@ -117,11 +117,13 @@ class PubNubSubscriptionHandler():
         """
         _LOGGER.info("PubNub subscribing")
         CHANNEL_LISTS = [CHANNELS[x:x+50] for x in range(0, len(CHANNELS), 50)]
-        print(str(CHANNEL_LISTS))
         for channel_list in CHANNEL_LISTS:
             self._pubnubs.append(PubNub(self._pnconfig))
             self._pubnubs[-1].add_listener(self._listener)
             self._pubnubs[-1].subscribe().channels(channel_list).execute()
+        if len(self_pubnubs) == 0:
+            self._pubnubs.append(PubNub(self._pnconfig))
+            self._pubnubs[-1].add_listener(self._listener)
         if self._keep_alive_function is not None:
             threading.Timer(self._keep_alive, self._run_keep_alive).start()
         self._subscribed = True

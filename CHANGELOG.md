@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.7
+- Change the subscription delay to 60 seconds
+
 ## 1.0.6
 - Change the channel splitting from 3 to 50 
 
