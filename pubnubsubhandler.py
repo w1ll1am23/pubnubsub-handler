@@ -121,7 +121,7 @@ class PubNubSubscriptionHandler():
             self._pubnubs.append(PubNub(self._pnconfig))
             self._pubnubs[-1].add_listener(self._listener)
             self._pubnubs[-1].subscribe().channels(channel_list).execute()
-        if len(self_pubnubs) == 0:
+        if len(self._pubnubs) == 0:
             self._pubnubs.append(PubNub(self._pnconfig))
             self._pubnubs[-1].add_listener(self._listener)
         if self._keep_alive_function is not None:

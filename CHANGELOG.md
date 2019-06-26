@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.8
+- Fixed a typo :(
+
 ## 1.0.7
 - Change the subscription delay to 60 seconds
 
