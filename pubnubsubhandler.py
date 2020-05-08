@@ -103,11 +103,11 @@ class PubNubSubscriptionHandler():
         Completly stop all pubnub operations.
         """
         _LOGGER.info("PubNub unsubscribing")
-        for pubnub in self.pubnubs:
+        for pubnub in self._pubnubs:
             pubnub.unsubscribe_all()
             pubnub.stop()
             pubnub = None
-        self.pubnubs.clear()
+        self._pubnubs.clear()
 
     def _subscribe(self):
         """
