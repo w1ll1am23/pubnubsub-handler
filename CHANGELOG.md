@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.9
+- Fixed reference to _pubnub
+
 ## 1.0.8
 - Fixed a typo :(
 
